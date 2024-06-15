@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
-import { store } from '../../src/store';
+import { store } from '../src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
@@ -30,6 +30,8 @@ export default function App() {
             
             if (reg !== null && email !== null && password !== null) {
                 authorize()
+
+                console.log(reg, email, password)
 
                 router.navigate("/home")
             } else {

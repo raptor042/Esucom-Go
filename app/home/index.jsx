@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,17 +27,30 @@ const content = [
 export default function App() {
     const [active, setActive] = useState(0)
 
-    const [reg, setReg] = useState("")
     const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
 
     const [loading, setLoading] = useState(false)
     const [visible, setVisible] = useState(false)
 
     const [uri, setURI] = useState("")
 
+    useEffect(() => {
+        getData()
+    }, [email])
+
     const { width } = Dimensions.get("window")
     const height = width
+
+    const getData = async () => {
+        try {
+            const email = await AsyncStorage.getItem('email');
+            console.log(email)
+
+            setEmail(email)            
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     const change = ({ nativeEvent }) => {
         const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
@@ -52,7 +65,7 @@ export default function App() {
             currency: "NGN",
             amount: 2000,
             email: email,
-            redirect_url: `https${redirectUrl.slice(3, )}`
+            redirect_url: redirectUrl
         }
         console.log(info)
 
