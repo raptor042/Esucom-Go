@@ -3,7 +3,7 @@
 import { createContext, useReducer } from "react";
 
 const initialState = {
-    auth : false
+    auth: null
 };
 
 const store = createContext(initialState);
@@ -14,15 +14,10 @@ const StateProvider = ({ children }) => {
         const { type, payload } = action;
         
         switch(type) {
-            case "Authorized" :
+            case "SET_AUTH" :
                 return {
                     ...state,
-                    auth : payload.auth
-                };
-            case "UnAuthorized" :
-                return {
-                        ...state,
-                    auth : payload.auth
+                    auth: payload.auth
                 };
             default :
                 throw new Error()

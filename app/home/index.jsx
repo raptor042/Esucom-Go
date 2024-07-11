@@ -6,6 +6,7 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { Avatar, Button, Icon, Image, Modal, Snackbar } from 'react-native-magnus';
 import axios from "axios";
+import { Link } from 'expo-router';
 
 const snackbarRef = React.createRef();
 
@@ -125,7 +126,7 @@ export default function App() {
                             Your payment link is ready 🎉
                         </Text>
                     </View>
-                    <View className="m-2">
+                    <View className="m-4">
                         <Button onPress={onBrowse} bg="#26DDC0" rounded="md" block>
                             <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-md font-bold text-white">Pay  &#8358;2,000.00</Text>
                         </Button>
