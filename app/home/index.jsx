@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from "expo-status-bar";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { Avatar, Button, Icon, Image, Modal, Snackbar } from 'react-native-magnus';
 import axios from "axios";
 import { Link } from 'expo-router';
+import { supabase } from '../../libs/supabase';
 
 const snackbarRef = React.createRef();
 
@@ -28,7 +28,7 @@ const content = [
 export default function App() {
     const [active, setActive] = useState(0)
 
-    const [email, setEmail] = useState("")
+    const [users, setUsers] = useState([])
 
     const [loading, setLoading] = useState(false)
     const [visible, setVisible] = useState(false)
@@ -37,17 +37,25 @@ export default function App() {
 
     useEffect(() => {
         getData()
-    }, [email])
+    }, [users])
 
     const { width } = Dimensions.get("window")
     const height = width
 
     const getData = async () => {
         try {
-            const email = await AsyncStorage.getItem('email');
-            console.log(email)
+            const { data: users, error } = await supabase.from("users").select()
 
-            setEmail(email)            
+            if(error) {
+                snackbarRef.current.show(error.message, {
+                    duration: 5000,
+                    suffix: <Icon name="closecircle" color="white" fontSize="md" fontFamily="AntDesign"/>
+                })
+    
+                throw error
+            } else {
+                setUsers(users)
+            }
         } catch (e) {
             console.log(e)
         }
@@ -154,7 +162,7 @@ export default function App() {
                 <View className="basis-1/4"></View>
                 <View className="basis-1/4">
                     <View className="flex items-end">
-                        <Avatar bg="gray500" color="white" size={36}>{email.charAt(0).toUpperCase()}</Avatar>
+                        <Avatar bg="gray500" color="white" size={36}>{users.email.charAt(0).toUpperCase()}</Avatar>
                     </View>
                 </View>
             </View>
