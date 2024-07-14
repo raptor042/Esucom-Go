@@ -5,8 +5,8 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { Avatar, Button, Icon, Image, Modal, Snackbar } from 'react-native-magnus';
 import axios from "axios";
-import { Link } from 'expo-router';
-import { supabase } from '../../libs/supabase';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { supabase } from '../../../libs/supabase';
 
 const snackbarRef = React.createRef();
 
@@ -28,23 +28,26 @@ const content = [
 export default function App() {
     const [active, setActive] = useState(0)
 
-    const [users, setUsers] = useState([])
+    const [user, setUser] = useState({ email: "" })
 
     const [loading, setLoading] = useState(false)
     const [visible, setVisible] = useState(false)
 
     const [uri, setURI] = useState("")
 
+    const { id } = useLocalSearchParams()
+
     useEffect(() => {
         getData()
-    }, [users])
+    }, [])
 
     const { width } = Dimensions.get("window")
     const height = width
 
     const getData = async () => {
         try {
-            const { data: users, error } = await supabase.from("users").select()
+            const { data: users, error } = await supabase.from("users").select().eq("user_id", id)
+            console.log(users)
 
             if(error) {
                 snackbarRef.current.show(error.message, {
@@ -54,7 +57,7 @@ export default function App() {
     
                 throw error
             } else {
-                setUsers(users)
+                setUser(users[0])
             }
         } catch (e) {
             console.log(e)
@@ -162,7 +165,7 @@ export default function App() {
                 <View className="basis-1/4"></View>
                 <View className="basis-1/4">
                     <View className="flex items-end">
-                        <Avatar bg="gray500" color="white" size={36}>{users.email.charAt(0).toUpperCase()}</Avatar>
+                        <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
                     </View>
                 </View>
             </View>

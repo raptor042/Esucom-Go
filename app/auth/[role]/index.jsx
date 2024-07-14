@@ -34,11 +34,13 @@ export default function Auth() {
     const { role } = useLocalSearchParams()
 
     useEffect(() => {
-        // if(auth && auth.user && role == "admin") {
-        //     router.navigate("/admin/dashboard")
-        // } else if(auth && auth.user && role == "student") {
-        //     router.navigate("/home")
-        // }
+        console.log(auth.user.id)
+
+        if(auth && auth.user && role == "admin") {
+            router.navigate(`/admin/${auth.user.id}`)
+        } else if(auth && auth.user && role == "student") {
+            router.navigate(`/home/${auth.user.id}`)
+        }
     }, [])
 
     const signUp = async () => {
@@ -82,9 +84,9 @@ export default function Auth() {
         }
     }
 
-    const addUser = async (id) => {
+    const addUser = async (user_id) => {
         const data = {
-            id,
+            user_id,
             email,
             reg,
             role,
@@ -107,7 +109,7 @@ export default function Auth() {
         setLoading(true)
 
         try {
-            if(reg == "" || email == "" || password == "" || code == "") {
+            if(email == "" || password == "" || code == "") {
                 snackbarRef.current.show("Missing Data!!!", {
                     duration: 5000,
                     suffix: <Icon name="closecircle" color="white" fontSize="md" fontFamily="AntDesign"/>
@@ -131,7 +133,7 @@ export default function Auth() {
                 setLoading(false)
     
                 if(role == "admin") {
-                    router.navigate("/admin/dashboard")
+                    router.navigate("/admin")
                 } else {
                     router.navigate("/home")
                 }
