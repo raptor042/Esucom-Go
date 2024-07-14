@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, SafeAreaView, Pressable, View, Text, ScrollView } from "react-native";
 import { Avatar, Button, Snackbar } from "react-native-magnus";
 import { supabase } from "../../../libs/supabase";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { VictoryChart, VictoryLine, VictoryPie, VictoryTheme } from "victory-native";
 
 const snackbarRef = React.createRef();
@@ -90,7 +90,9 @@ export default function Dashboard() {
                     <View className="basis-1/4"></View>
                     <View className="basis-1/4">
                         <View className="flex items-end">
-                            <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
+                            <Pressable onPress={() => router.push(`/profile/${id}`)}>
+                                <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
+                            </Pressable>
                         </View>
                     </View>
                 </View>

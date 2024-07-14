@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { Avatar, Button, Icon, Image, Modal, Snackbar } from 'react-native-magnus';
 import axios from "axios";
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../../libs/supabase';
 
 const snackbarRef = React.createRef();
@@ -165,7 +165,9 @@ export default function App() {
                 <View className="basis-1/4"></View>
                 <View className="basis-1/4">
                     <View className="flex items-end">
-                        <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
+                        <Pressable onPress={() => router.push(`/profile/${id}`)}>
+                            <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
+                        </Pressable>
                     </View>
                 </View>
             </View>
