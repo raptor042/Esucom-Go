@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, SafeAreaView, Pressable, View, Text, ScrollView } from "react-native";
-import { Button, Icon, Image, Snackbar } from "react-native-magnus";
+import { Avatar, Button, Icon, Image, Snackbar } from "react-native-magnus";
 import { supabase } from "../../../libs/supabase";
 import { Link, router, useLocalSearchParams } from "expo-router";
 
@@ -8,6 +8,8 @@ const snackbarRef = React.createRef();
 
 export default function Profile() {
     const [user, setUser] = useState({ role: "", reg: "" })
+
+    const [image, setImage] = useState(null)
 
     useEffect(() => {
         getData()
@@ -18,10 +20,28 @@ export default function Profile() {
 
     const { id } = useLocalSearchParams()
 
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+        console.log(result)
+        console.log(decode(result.assets[0].uri))
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri)
+            uploadImg(result.assets[0].uri)
+        }
+    }
+
     const getData = async () => {
         try {
             const { data: user, error } = await supabase.from("users").select().eq("user_id", id)
             console.log(user)
+
+            setImage(user.avatar)
 
             if(error) {
                 snackbarRef.current.show(error.message, {
@@ -50,6 +70,39 @@ export default function Profile() {
             throw error
         } else {
             router.push(`/auth/${user.role}`)
+        }
+    }
+
+    const uploadImg = async (img) => {
+        const date = Date()
+
+        const { data: avatar, error } = await supabase.storage.from("Avatars").upload(`${date}.png`, decode(img), {
+            contentType: image.mimeType ?? "image/png"
+        })
+        console.log(avatar)
+
+        if(error) {
+            snackbarRef.current.show(error.message, {
+                duration: 5000,
+                suffix: <Icon name="closecircle" color="white" fontSize="md" fontFamily="AntDesign"/>
+            })
+
+            throw error
+        } else {
+            await updateUserAvatar(`${date}.png`)
+        }
+    }
+
+    const updateUserAvatar = async (avatar) => {
+        const { error } = await supabase.from("users").update({ avatar: `https://hygdceqkiqsrkubfdydw.supabase.co/storage/v1/object/public/Avatars/${avatar}` }).eq({ user_id: id })
+
+        if(error) {
+            snackbarRef.current.show(error.message, {
+                duration: 5000,
+                suffix: <Icon name="closecircle" color="white" fontSize="md" fontFamily="AntDesign"/>
+            })
+
+            throw error
         }
     }
 
@@ -85,18 +138,33 @@ export default function Profile() {
                     </View>
                 </View>
                 <View className="flex justify-center items-center m-1 p-2">
-                    <View className="m-1">
-                        <Image
-                            h={100}
-                            w={100}
-                            m={10}
-                            rounded="circle"
-                            source={{
-                                uri:
-                                "https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MXwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-                            }}
-                        />
-                    </View>
+                    {!image &&
+                        <View className="flex items-center justify-center m-4">
+                            <Pressable onPress={pickImage}>
+                                <Avatar bg="gray500" color="white" size={100}>
+                                    <Icon
+                                        name="camera"
+                                        color="white"
+                                        fontSize="6xl"
+                                        fontFamily="AmtDesign"
+                                    />
+                                </Avatar>
+                            </Pressable>
+                        </View>
+                    }
+                    {image &&
+                        <View className="flex items-center justify-center m-4">
+                            <Pressable onPress={pickImage}>
+                                <Image
+                                    h={100}
+                                    w={100}
+                                    m={10}
+                                    rounded="circle"
+                                    source={{ uri: image}}
+                                />
+                            </Pressable>
+                        </View>
+                    }
                     <View className="m-1">
                         <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-white font-bold text-lg text-center m-2">Nwoye Chiemezie Benjamin</Text>
                         <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-white font-bold text-lg text-center m-2">{user.reg}</Text>

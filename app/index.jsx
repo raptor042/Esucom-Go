@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, SafeAreaView, Text, View } from 'react-native';
 import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
+import { router, useLocalSearchParams, usePathname } from "expo-router";
 import { store } from '../libs/store';
 import { supabase } from "../libs/supabase";
 import { Button, Dropdown, Image } from 'react-native-magnus';

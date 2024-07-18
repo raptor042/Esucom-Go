@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Dimensions, SafeAreaView, Pressable, View, Text, ScrollView } from "react-native";
-import { Avatar, Button, Snackbar } from "react-native-magnus";
+import { Avatar, Button, Icon, Modal, Snackbar } from "react-native-magnus";
 import { supabase } from "../../../libs/supabase";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { VictoryChart, VictoryLine, VictoryPie, VictoryTheme } from "victory-native";
+import { DataTable } from "react-native-paper";
+import { store } from "../../../libs/store";
 
 const snackbarRef = React.createRef();
 
@@ -40,17 +42,84 @@ const classes = [
     }
 ]
 
+const classList = [
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+    {
+        name: "Achi Kalu Peter",
+        reg: 2019030145632,
+        status: false
+    },
+]
+
+const numberOfItemsPerPageList = [2, 3, 4];
+
 export default function Dashboard() {
     const [user, setUser] = useState({ email: "" })
 
     const [dashboard, setDashboard] = useState(true)
     const [weekly, setWeekly] = useState(true)
-    const [list, setList] = useState(false)
 
+    const [clas, setClas] = useState(0)
+
+    const [visible, setVisible] = useState(false)
+
+    const [page, setPage] = useState(0);
+    const [numberOfItemsPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[0]);
+    const from = page * numberOfItemsPerPage;
+    const to = Math.min((page + 1) * numberOfItemsPerPage, classList.length);
+
+    const { state } = useContext(store)
+    const { auth } = state
 
     useEffect(() => {
         getData()
-    }, [])
+
+        setPage(0)
+    }, [numberOfItemsPerPage])
 
     const { width } = Dimensions.get("window")
     const height = width
@@ -70,11 +139,17 @@ export default function Dashboard() {
     
                 throw error
             } else {
-                setUser(user[0])
+                // setUser(user[0])
             }
         } catch (e) {
             console.log(e)
         }
+    }
+
+    const showClassList = (index) => {
+        setClas(index)
+
+        setVisible(true)
     }
 
     return (
@@ -91,7 +166,7 @@ export default function Dashboard() {
                     <View className="basis-1/4">
                         <View className="flex items-end">
                             <Pressable onPress={() => router.push(`/profile/${id}`)}>
-                                <Avatar bg="gray500" color="white" size={36}>{user.email.charAt(0).toUpperCase()}</Avatar>
+                                <Avatar bg="gray500" color="white" size={36}>{auth.user.email.charAt(0).toUpperCase()}</Avatar>
                             </Pressable>
                         </View>
                     </View>
@@ -197,13 +272,67 @@ export default function Dashboard() {
                                 </Text>
                             </View>
                             <View className="flex justify-center m-4">
-                                <Button onPress={() => setList(true)} bg="#26DDC0" rounded="md" block>
+                                <Button onPress={() => showClassList(i)} bg="#26DDC0" rounded="md" block>
                                     <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-sm text-white">View Class List</Text>
                                 </Button>
                             </View>
                         </View>
                     ))
                 }
+                <Modal isVisible={visible}>
+                    <Button
+                        bg="gray400"
+                        h={35}
+                        w={35}
+                        position="absolute"
+                        top={50}
+                        right={15}
+                        rounded="circle"
+                        onPress={() => setVisible(false)}
+                    >
+                        <Icon color="black900" name="close" />
+                    </Button>
+                    <View className="">
+                        <Text style={{ fontFamily: "Caveat_700Bold" }} className="text-white font-bold text-3xl text-center m-2">{classes[clas].class} Class List</Text>
+                    </View>
+                    <View className="flex justify-center items-center m-2 p-2">
+                        <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-md text-gray-500 font-bold m-2">
+                            Course Rep: <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-md text-black font-black">{classes[clas].rep}</Text>
+                        </Text>
+                        <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-md text-gray-500 font-bold m-2">
+                            Contact: <Text style={{ fontFamily: "Poppins_700Bold" }} className="text-md text-black font-black">{classes[clas].contact}</Text>
+                        </Text>
+                    </View>
+                    <DataTable className="">
+                        <DataTable.Header className="bg-white">
+                            <DataTable.Title>S/N</DataTable.Title>
+                            <DataTable.Title>Name</DataTable.Title>
+                            <DataTable.Title>Reg No</DataTable.Title>
+                            <DataTable.Title>Status</DataTable.Title>
+                        </DataTable.Header>
+                        {
+                            classList.slice(0, numberOfItemsPerPage).map((clas, index) => (
+                                <DataTable.Row key={index}>
+                                    <DataTable.Cell>{index + 1}</DataTable.Cell>
+                                    <DataTable.Cell>{clas.name}</DataTable.Cell>
+                                    <DataTable.Cell>{clas.reg}</DataTable.Cell>
+                                    <DataTable.Cell>Not Cleared</DataTable.Cell>
+                                </DataTable.Row>
+                            ))
+                        }
+                        <DataTable.Pagination
+                            page={page}
+                            numberOfPages={Math.ceil(classList.length / numberOfItemsPerPage)}
+                            onPageChange={page => setPage(page)}
+                            label={`${from + 1}-${to} of ${classList.length}`}
+                            showFastPaginationControls
+                            numberOfItemsPerPageList={numberOfItemsPerPageList}
+                            numberOfItemsPerPage={numberOfItemsPerPage}
+                            onItemsPerPageChange={onItemsPerPageChange}
+                            selectPageDropdownLabel={'Rows per page'}
+                        />
+                    </DataTable>
+                </Modal>
             </ScrollView>
         </SafeAreaView>
     )

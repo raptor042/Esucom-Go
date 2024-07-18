@@ -4,6 +4,7 @@ import { Caveat_700Bold } from '@expo-google-fonts/caveat';
 import { useEffect } from "react";
 import { StateProvider } from "../libs/store";
 import { ThemeProvider } from "react-native-magnus";
+import { Provider } from "react-native-paper";
 
 SplashScreen.preventAutoHideAsync()
 
@@ -26,9 +27,11 @@ export default function HomeLayout() {
 
     return (
         <ThemeProvider>
-            <StateProvider>
-                <Slot/>
-            </StateProvider>
+            <Provider>
+                <StateProvider>
+                    <Slot/>
+                </StateProvider>
+            </Provider>
         </ThemeProvider>
     )
 }
