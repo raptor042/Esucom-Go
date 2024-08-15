@@ -50,8 +50,12 @@ export default function Profile() {
                 })
     
                 throw error
-            } else {
+            }
+
+            if(user.length > 0) {
                 setUser(user[0])
+            } else {
+                router.push("/account")
             }
         } catch (e) {
             console.log(e)

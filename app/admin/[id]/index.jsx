@@ -107,10 +107,11 @@ export default function Dashboard() {
 
     const [visible, setVisible] = useState(false)
 
-    const [page, setPage] = useState(0);
-    const [numberOfItemsPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[0]);
-    const from = page * numberOfItemsPerPage;
-    const to = Math.min((page + 1) * numberOfItemsPerPage, classList.length);
+    const [page, setPage] = useState(0)
+    const [showList, setShowList] = useState(true)
+    const [numberOfItemsPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[1])
+    const from = page * numberOfItemsPerPage
+    const to = Math.min((page + 1) * numberOfItemsPerPage, classList.length)
 
     const { state } = useContext(store)
     const { auth } = state
@@ -138,8 +139,10 @@ export default function Dashboard() {
                 })
     
                 throw error
-            } else {
-                // setUser(user[0])
+            }
+
+            if(user.length > 0) {
+                setUser(user[0])
             }
         } catch (e) {
             console.log(e)
@@ -150,6 +153,14 @@ export default function Dashboard() {
         setClas(index)
 
         setVisible(true)
+    }
+
+    const changePage = (page) => {
+        setShowList(false)
+
+        setPage(page)
+
+        setShowList(true)
     }
 
     return (
@@ -280,18 +291,6 @@ export default function Dashboard() {
                     ))
                 }
                 <Modal isVisible={visible}>
-                    <Button
-                        bg="gray400"
-                        h={35}
-                        w={35}
-                        position="absolute"
-                        top={50}
-                        right={15}
-                        rounded="circle"
-                        onPress={() => setVisible(false)}
-                    >
-                        <Icon color="black900" name="close" />
-                    </Button>
                     <View className="">
                         <Text style={{ fontFamily: "Caveat_700Bold" }} className="text-white font-bold text-3xl text-center m-2">{classes[clas].class} Class List</Text>
                     </View>
@@ -310,8 +309,8 @@ export default function Dashboard() {
                             <DataTable.Title>Reg No</DataTable.Title>
                             <DataTable.Title>Status</DataTable.Title>
                         </DataTable.Header>
-                        {
-                            classList.slice(0, numberOfItemsPerPage).map((clas, index) => (
+                        {showList &&
+                            classList.slice(page, page + numberOfItemsPerPage).map((clas, index) => (
                                 <DataTable.Row key={index}>
                                     <DataTable.Cell>{index + 1}</DataTable.Cell>
                                     <DataTable.Cell>{clas.name}</DataTable.Cell>
@@ -323,7 +322,7 @@ export default function Dashboard() {
                         <DataTable.Pagination
                             page={page}
                             numberOfPages={Math.ceil(classList.length / numberOfItemsPerPage)}
-                            onPageChange={page => setPage(page)}
+                            onPageChange={page => changePage(page)}
                             label={`${from + 1}-${to} of ${classList.length}`}
                             showFastPaginationControls
                             numberOfItemsPerPageList={numberOfItemsPerPageList}
@@ -332,6 +331,18 @@ export default function Dashboard() {
                             selectPageDropdownLabel={'Rows per page'}
                         />
                     </DataTable>
+                    <Button
+                        bg="gray400"
+                        h={35}
+                        w={35}
+                        position="absolute"
+                        top={50}
+                        right={15}
+                        rounded="circle"
+                        onPress={() => {setVisible(false)}}
+                    >
+                        <Icon color="black900" name="close" />
+                    </Button>
                 </Modal>
             </ScrollView>
         </SafeAreaView>

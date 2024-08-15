@@ -59,7 +59,6 @@ export default function Account() {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri)
-            uploadImg(result.assets[0].uri)
         }
     }
 
@@ -106,7 +105,6 @@ export default function Account() {
             throw error
         } else {
             setLoading(false)
-            setLogin(true)
         }
     }
 
@@ -122,7 +120,7 @@ export default function Account() {
     
                 setLoading(false)
             } else {
-                await uploadImg()
+                await uploadImg(image)
     
                 setLoading(false)
     
@@ -140,7 +138,7 @@ export default function Account() {
     }
 
     return (
-        <SafeAreaView>
+        <SafeAreaView className="h-screen">
             <Snackbar ref={snackbarRef} bg="red700" color="white"></Snackbar>
             <View className="flex justify-center items-center mx-4 mt-8 mb-4">
                 <Text style={{ fontFamily: "Caveat_700Bold" }} className="text-black font-black text-5xl">Esucom Go</Text>
